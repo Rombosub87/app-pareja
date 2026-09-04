@@ -31,6 +31,14 @@ def seed_users():
             db.session.add(User(username=username, pin=pin))
     db.session.commit()
 
+
+# ── Inicialización de la Base de Datos para Servidores (Gunicorn / Render) ────
+# Esto se ejecuta SIEMPRE que arranca la app, no solo en local
+with app.app_context():
+    db.create_all()
+    seed_users()
+
+
 # ── Rutas ─────────────────────────────────────────────────────────────────────
 
 @app.route("/")
@@ -129,10 +137,5 @@ def logout():
 # ── Entrypoint ─────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-        seed_users()
-    
-    # Lee el puerto que asigna Render (o usa 5000 en local)
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
