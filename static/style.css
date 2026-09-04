@@ -1,0 +1,400 @@
+/* ── Reset & Tokens ─────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --bg:          #e0f2fe;
+    --bg-deep:     #bae6fd;
+    --blue:        #0052ff;
+    --blue-mid:    #1d6bff;
+    --blue-light:  #93c5fd;
+    --blue-pale:   #dbeafe;
+    --white:       #ffffff;
+    --text:        #0f172a;
+    --text-soft:   #475569;
+    --radius-lg:   1.25rem;
+    --radius-pill: 999px;
+    --shadow:      0 4px 24px rgba(0,82,255,.12);
+    --shadow-sm:   0 2px 8px  rgba(0,82,255,.08);
+    --font:        -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+
+html, body {
+    height: 100%;
+    background: var(--bg);
+    font-family: var(--font);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ── Flash bar ──────────────────────────────────────────────────────────── */
+.flash-bar {
+    background: #fef2f2;
+    color: #b91c1c;
+    text-align: center;
+    padding: .6rem 1rem;
+    font-size: .875rem;
+    font-weight: 500;
+    border-bottom: 1px solid #fecaca;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LOGIN
+   ═══════════════════════════════════════════════════════════════════════════ */
+.login-page {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: linear-gradient(160deg, var(--bg) 0%, var(--bg-deep) 100%);
+}
+
+.login-card {
+    width: 100%;
+    max-width: 360px;
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 2rem 1.75rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Brand */
+.login-brand { text-align: center; }
+.login-icon  { font-size: 2.5rem; margin-bottom: .5rem; }
+.login-brand h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -.03em;
+    color: var(--blue);
+}
+.login-subtitle { font-size: .875rem; color: var(--text-soft); margin-top: .25rem; }
+
+/* User selector */
+.user-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .5rem;
+}
+.user-btn {
+    padding: .65rem;
+    border: 2px solid var(--bg-deep);
+    border-radius: var(--radius-pill);
+    background: var(--bg);
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    cursor: pointer;
+    transition: all .2s;
+}
+.user-btn.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: var(--white);
+    box-shadow: var(--shadow-sm);
+}
+
+/* PIN dots */
+.pin-display {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    padding: .5rem 0;
+}
+.pin-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--blue-light);
+    background: transparent;
+    transition: background .15s, border-color .15s, transform .15s;
+}
+.pin-dot.filled {
+    background: var(--blue);
+    border-color: var(--blue);
+    transform: scale(1.15);
+}
+
+/* Keyboard */
+.pin-keyboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .5rem;
+}
+.key-btn {
+    aspect-ratio: 1;
+    border: none;
+    border-radius: var(--radius-lg);
+    background: var(--bg);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    transition: background .15s, transform .1s;
+    -webkit-tap-highlight-color: transparent;
+}
+.key-btn:active { transform: scale(.91); background: var(--bg-deep); }
+.key-del { font-size: 1.15rem; color: var(--text-soft); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DASHBOARD
+   ═══════════════════════════════════════════════════════════════════════════ */
+.dashboard {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 1rem);
+    background: linear-gradient(170deg, var(--bg) 0%, var(--bg-deep) 100%);
+}
+
+/* Header */
+.dash-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+}
+.dash-user {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--blue);
+    letter-spacing: -.02em;
+}
+.logout-btn {
+    font-size: 1.1rem;
+    color: var(--text-soft);
+    text-decoration: none;
+    padding: .35rem .6rem;
+    border-radius: var(--radius-pill);
+    transition: background .15s;
+}
+.logout-btn:hover { background: var(--bg-deep); }
+
+/* Section labels */
+.section-label {
+    text-align: center;
+    font-size: .75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text-soft);
+    margin-bottom: .5rem;
+}
+
+/* ── Wheel section ──────────────────────────────────────────────────────── */
+.wheel-section {
+    flex: 0 0 auto;
+    padding: .5rem 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.wheel-wrapper {
+    position: relative;
+    width: min(72vw, 300px);
+    height: min(72vw, 300px);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    background: transparent !important;
+}
+
+.wheel-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: drop-shadow(0 6px 18px rgba(0,82,255,.18));
+    background: transparent !important;
+    border-radius: 50%;
+}
+
+/* Segmentos estáticos (previene deformaciones o transformaciones) */
+.wheel-segment {
+    cursor: pointer;
+    transition: opacity .25s ease, stroke .25s ease, stroke-width .25s ease;
+    transform: none !important;
+    transform-origin: center;
+}
+
+/* Transición suave al pulsar sin escalado */
+.wheel-segment:active {
+    opacity: .8;
+    transform: none !important;
+}
+
+/* Centro de la rueda */
+.wheel-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 28%;
+    height: 28%;
+    background: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    box-shadow: 0 0 0 3px var(--bg), var(--shadow-sm);
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Etiqueta de estado activo debajo de la rueda */
+.current-status-label {
+    margin-top: 1rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--blue);
+    text-align: center;
+    min-height: 1.4em;
+    transition: opacity .3s;
+}
+
+/* ── Partner section ────────────────────────────────────────────────────── */
+.partner-section {
+    flex: 1;
+    padding: 1.25rem 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.partner-card {
+    position: relative;
+    width: 100%;
+    max-width: 340px;
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 1.5rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .65rem;
+    overflow: hidden;
+    transition: transform .3s;
+}
+.partner-card.bump { animation: bump .35s ease; }
+
+.partner-icon { font-size: 2.2rem; }
+.partner-status {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+}
+
+/* Pulse indicator */
+.partner-pulse {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--blue-light);
+}
+.partner-pulse.active {
+    background: var(--blue);
+    animation: pulse 2s infinite;
+}
+
+/* ── Animaciones ────────────────────────────────────────────────────────── */
+@keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(0,82,255,.4); }
+    70%  { box-shadow: 0 0 0 8px rgba(0,82,255,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,82,255,0); }
+}
+
+@keyframes bump {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.04); }
+    100% { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Toast de confirmación */
+.toast {
+    position: fixed;
+    bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%) translateY(1rem);
+    background: var(--blue);
+    color: var(--white);
+    padding: .7rem 1.5rem;
+    border-radius: var(--radius-pill);
+    font-size: .875rem;
+    font-weight: 600;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s, transform .25s;
+    white-space: nowrap;
+    z-index: 100;
+}
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* ── Tablet/Desktop ─────────────────────────────────────────────────────── */
+@media (min-width: 600px) {
+    .dashboard { flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 2rem; padding: 2rem; }
+    .dash-header { width: 100%; flex: 0 0 100%; }
+    .wheel-section, .partner-section { flex: 0 0 auto; }
+    .wheel-wrapper { width: 280px; height: 280px; }
+}
+/* Bloquear la aparición de fondos negros en el SVG */
+.wheel-wrapper, .wheel-svg {
+    background: none !important;
+    background-color: transparent !important;
+}
+
+/* Mantener el tamaño fijo sin transformar los quesitos */
+.wheel-segment {
+    transition: fill 0.25s ease, opacity 0.25s ease, stroke 0.25s ease !important;
+    transform: none !important;
+}
+
+.wheel-segment:hover, .wheel-segment:active {
+    transform: none !important;
+}
+/* Estilos para responsividad móvil */
+.dashboard {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    box-sizing: border-box;
+}
+
+.wheel-wrapper {
+    width: 100%;
+    max-width: 320px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    position: relative;
+}
+
+.wheel-svg {
+    width: 100%;
+    height: 100%;
+}
+
+input, button {
+    font-size: 16px;
+}

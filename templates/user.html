@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block title %}Hola, {{ me.username|capitalize }} 💙{% endblock %}
+
+{% block content %}
+<main class="dashboard">
+
+    <!-- Header -->
+    <header class="dash-header">
+        <span class="dash-user">{{ me.username|capitalize }}</span>
+        <a href="/logout" class="logout-btn" aria-label="Cerrar sesión">↩</a>
+    </header>
+
+    <!-- Tu rueda -->
+    <section class="wheel-section">
+        <p class="section-label">¿Cómo estás ahora?</p>
+        <div class="wheel-wrapper" id="myWheel" role="group" aria-label="Rueda de estados">
+            <svg class="wheel-svg" viewBox="-1.1 -1.1 2.2 2.2" xmlns="http://www.w3.org/2000/svg">
+                <!-- Los segmentos se construyen mediante la función renderWheel() -->
+            </svg>
+            <div class="wheel-center">
+                <span id="centerIcon">💙</span>
+            </div>
+        </div>
+        <p class="current-status-label" id="myStatusLabel">
+            {% if me.status %}{{ me.status }}{% else %}Toca un segmento{% endif %}
+        </p>
+    </section>
+
+    <!-- Estado de la pareja -->
+    <section class="partner-section">
+        <p class="section-label">{{ partner.username|capitalize if partner else "Pareja" }} ahora mismo</p>
+        <div class="partner-card" id="partnerCard">
+            <div class="partner-icon" id="partnerIcon">
+                {{ "💤" if not partner or not partner.status else "" }}
+            </div>
+            <p class="partner-status" id="partnerStatus">
+                {{ partner.status if partner and partner.status else "Sin estado todavía" }}
+            </p>
+            <span class="partner-pulse" id="partnerPulse"></span>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    const MY_CURRENT_STATUS = "{{ me.status | e }}";
+    const PARTNER_NAME = "{{ partner.username|capitalize if partner else '' }}";
+
+    const SEGMENTS = [
+        { label: "Pienso en ti", emoji: "✨", color: "#93c5fd" },
+        { label: "Necesito llamarte", emoji: "📞", color: "#60a5fa" },
+        { label: "Tengo que contarte algo", emoji: "🤪", color: "#3b82f6" },
+        { label: "Estoy sobrepensando", emoji: "🌀", color: "#2563eb" },
+        { label: "Me apetece tener una cita", emoji: "💭", color: "#1d4ed8" }
+    ];
+
+    const SEGMENT_EMOJIS = {
+        "Pienso en ti": "✨",
+        "Necesito llamarte": "📞",
+        "Tengo que contarte algo": "🤪",
+        "Estoy sobrepensando": "🌀",
+        "Me apetece tener una cita": "💭"
+    };
+
+    let selectedStatus = MY_CURRENT_STATUS;
+
+    // Dibujar sectores circulares perfectos en SVG sin fondos externos
+    function renderWheel() {
+        const svg = document.querySelector(".wheel-svg");
+        if (!svg) return;
+        svg.innerHTML = "";
+
+        const total = SEGMENTS.length;
+        const outerR = 1.0;
+        const innerR = 0.38; 
+
+        SEGMENTS.forEach((seg, i) => {
+            const startAngle = (i * 2 * Math.PI) / total - Math.PI / 2;
+            const endAngle = ((i + 1) * 2 * Math.PI) / total - Math.PI / 2;
+
+            const x1 = outerR * Math.cos(startAngle);
+            const y1 = outerR * Math.sin(startAngle);
+            const x2 = outerR * Math.cos(endAngle);
+            const y2 = outerR * Math.sin(endAngle);
+
+            const x3 = innerR * Math.cos(endAngle);
+            const y3 = innerR * Math.sin(endAngle);
+            const x4 = innerR * Math.cos(startAngle);
+            const y4 = innerR * Math.sin(startAngle);
+
+            const pathData = [
+                `M ${x1} ${y1}`,
+                `A ${outerR} ${outerR} 0 0 1 ${x2} ${y2}`,
+                `L ${x3} ${y3}`,
+                `A ${innerR} ${innerR} 0 0 0 ${x4} ${y4}`,
+                "Z"
+            ].join(" ");
+
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("d", pathData);
+            path.setAttribute("class", "wheel-segment");
+            path.setAttribute("data-status", seg.label);
+            path.style.fill = seg.color;
+            path.style.stroke = "#ffffff";
+            path.style.strokeWidth = "0.02";
+            path.style.cursor = "pointer";
+
+            path.addEventListener("click", () => selectStatus(seg.label));
+
+            // Emojis alineados en cada sector
+            const midAngle = (startAngle + endAngle) / 2;
+            const textR = (outerR + innerR) / 2;
+            const tx = textR * Math.cos(midAngle);
+            const ty = textR * Math.sin(midAngle);
+
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute("x", tx);
+            text.setAttribute("y", ty);
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("dominant-baseline", "central");
+            text.setAttribute("font-size", "0.22");
+            text.setAttribute("pointer-events", "none");
+            text.textContent = seg.emoji;
+
+            svg.appendChild(path);
+            svg.appendChild(text);
+        });
+
+        highlightSegment(selectedStatus, svg);
+    }
+
+    // Cambiar la intensidad del azul sin deformar ni mover la rueda
+    function highlightSegment(statusLabel, svg) {
+        svg = svg || document.querySelector(".wheel-svg");
+        if (!svg) return;
+
+        svg.querySelectorAll(".wheel-segment").forEach((p) => {
+            const isSelected = p.dataset.status === statusLabel;
+            if (isSelected) {
+                p.style.fill = "#0052ff";        /* Azul intenso activado */
+                p.style.opacity = "1";
+                p.style.stroke = "#0052ff";
+                p.style.strokeWidth = "0.03";
+            } else {
+                const baseSeg = SEGMENTS.find(s => s.label === p.dataset.status);
+                p.style.fill = baseSeg ? baseSeg.color : "#93c5fd"; /* Azul normal del pastel */
+                p.style.opacity = "0.6";          /* Rebaja opacidad en inactivos */
+                p.style.stroke = "#ffffff";
+                p.style.strokeWidth = "0.02";
+            }
+        });
+
+        const icon = document.getElementById("centerIcon");
+        if (icon) icon.textContent = SEGMENT_EMOJIS[statusLabel] || "💙";
+    }
+
+    function selectStatus(statusLabel) {
+        selectedStatus = statusLabel;
+        highlightSegment(statusLabel);
+        
+        const labelElem = document.getElementById("myStatusLabel");
+        if (labelElem) labelElem.textContent = statusLabel;
+
+        fetch("/update_status", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: statusLabel })
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", renderWheel);
+    // Consulta el estado de la pareja cada 4 segundos
+function pollPartner() {
+    fetch("/partner_status")
+        .then(res => res.json())
+        .then(data => {
+            if (data.ok) {
+                const partnerStatusElem = document.getElementById("partnerStatus");
+                const partnerIconElem = document.getElementById("partnerIcon");
+                
+                // Si la pareja tiene un estado guardado, lo muestra; si no, muestra el mensaje por defecto
+                const currentStatus = data.status && data.status.trim() !== "" 
+                    ? data.status 
+                    : "Sin estado todavía";
+
+                if (partnerStatusElem) {
+                    partnerStatusElem.textContent = currentStatus;
+                }
+                if (partnerIconElem) {
+                    partnerIconElem.textContent = SEGMENT_EMOJIS[data.status] || "💤";
+                }
+            }
+        })
+        .catch(err => console.error("Error al obtener estado:", err));
+}
+
+// Iniciar la consulta automática
+setInterval(pollPartner, 4000); // 4000ms = 4 segundos
+</script>
+{% endblock %}
